@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using SecureApi.Constants;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,9 +14,19 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAuthorization(opts =>
 {
-    opts.AddPolicy(PolicyConstants.MustBeAdmin, policy =>
+    opts.AddPolicy(PolicyConstants.Admin, policy =>
     {
         policy.RequireClaim("Role", "admin");
+    });
+    opts.AddPolicy(PolicyConstants.Teacher, policy =>
+    {
+        policy.RequireClaim("Role", "teacher");
+        policy.RequireClaim("Permission", "read", "write");
+    });
+    opts.AddPolicy(PolicyConstants.Student, policy =>
+    {
+        policy.RequireClaim("Role", "student");
+        policy.RequireClaim("Permission", "read", "write");
     });
     opts.FallbackPolicy = new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()

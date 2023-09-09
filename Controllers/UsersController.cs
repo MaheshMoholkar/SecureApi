@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SecureApi.Constants;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -11,6 +12,7 @@ namespace SecureApi.Controllers
     {
         // GET: api/<UsersController>
         [HttpGet]
+        [Authorize(Policy = PolicyConstants.Admin)]
         public IEnumerable<string> Get()
         {
             return new string[] { "value1", "value2" };
@@ -18,7 +20,7 @@ namespace SecureApi.Controllers
 
         // GET api/<UsersController>/5
         [HttpGet("{id}")]
-        [Authorize(Policy ="MustHaveRole")]
+        [Authorize(Policy =PolicyConstants.Teacher)]
         public string Get(int id)
         {
             return "UserId: 1";
@@ -27,18 +29,6 @@ namespace SecureApi.Controllers
         // POST api/<UsersController>
         [HttpPost]
         public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<UsersController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<UsersController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
         {
         }
     }
