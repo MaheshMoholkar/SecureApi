@@ -12,7 +12,8 @@ namespace SecureApi.Controllers
     {
         // GET: api/<UsersController>
         [HttpGet]
-        [Authorize(Policy = PolicyConstants.Admin)]
+        // [Authorize(Policy = PolicyConstants.Admin)]
+        [ResponseCache(Duration = 10, Location = ResponseCacheLocation.Any, NoStore = false)]
         public IEnumerable<string> Get()
         {
             return new string[] { "value1", "value2" };

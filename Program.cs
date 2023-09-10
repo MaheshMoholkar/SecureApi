@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using SecureApi.Constants;
-using System.Security.Claims;
 using System.Text;
+using AspNetCoreRateLimit;
+using SecureApi.StartupConfig;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,11 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddResponseCaching();
+
+builder.Services.AddMemoryCache();
+builder.AddRateLimitServices();
+
 builder.Services.AddAuthorization(opts =>
 {
     opts.AddPolicy(PolicyConstants.Admin, policy =>
@@ -28,9 +34,9 @@ builder.Services.AddAuthorization(opts =>
         policy.RequireClaim("Role", "student");
         policy.RequireClaim("Permission", "read", "write");
     });
-    opts.FallbackPolicy = new AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser()
-        .Build();
+    // opts.FallbackPolicy = new AuthorizationPolicyBuilder()
+    //     .RequireAuthenticatedUser()
+    //     .Build();
 });
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer(opts =>
@@ -58,10 +64,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseResponseCaching();
+
 app.UseAuthentication();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseIpRateLimiting();
 
 app.Run();
